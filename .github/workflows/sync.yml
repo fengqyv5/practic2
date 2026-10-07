@@ -1,0 +1,90 @@
+name: 同步上游并重建
+
+# 每天检查上游更新；有更新则重建 dist/mihomoScript.js 并提交
+on:
+  schedule:
+    # 每天 03:17 UTC（约北京时间 11:17），避开整点高峰
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+    # 手动触发时带参数：force=1 强制重建（即使上游无变化）
+    inputs:
+      force:
+        description: '强制重建（忽略上游是否变化）'
+        required: false
+        default: '0'
+  push:
+    # 只有 patches.js 变化时才触发（比如你改了开关默认值）
+    paths:
+      - 'build/patches.js'
+      - 'build/build.cjs'
+      - '.github/workflows/sync.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 拉取上游最新版
+        id: fetch
+        run: node build/fetch-upstream.cjs
+
+      - name: 判断是否需要重建
+        id: check
+        run: |
+          if [ "${{ inputs.force }}" = "1" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "手动强制重建"
+          elif git diff --quiet build/upstream.js; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "上游无变化，跳过"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "检测到上游更新"
+          fi
+
+      - name: 应用补丁并自检
+        if: steps.check.outputs.changed == 'true'
+        run: node build/build.cjs
+
+      - name: 校验产物完整性
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          test -f dist/mihomoScript.js || { echo "产物缺失"; exit 1; }
+          SIZE=$(wc -c < dist/mihomoScript.js)
+          echo "产物大小: $SIZE 字节"
+          if [ "$SIZE" -lt 40000 ]; then
+            echo "产物过小，可能构建异常"
+            exit 1
+          fi
+          # 确认关键内容存在
+          grep -q '启用AntiAD' dist/mihomoScript.js || { echo "缺少 anti-AD 开关"; exit 1; }
+          grep -q 'anti-ad.github.io' dist/mihomoScript.js || { echo "缺少 anti-AD 规则集"; exit 1; }
+          grep -q 'MiHomo-Hagezi' dist/mihomoScript.js || { echo "缺少 HageZi 规则集"; exit 1; }
+          echo "校验通过"
+
+      - name: 提交更新
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add build/upstream.js dist/mihomoScript.js
+          if git diff --staged --quiet; then
+            echo "无文件变化，跳过提交"
+            exit 0
+          fi
+          SHA=$(git rev-parse --short HEAD)
+          git commit -m "chore: 同步上游并重建 (${SHA})"
+          git push
+          echo "已推送"
