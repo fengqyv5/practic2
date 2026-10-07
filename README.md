@@ -3,17 +3,6 @@
 基于 [AIsouler/MyClash](https://github.com/AIsouler/MyClash) 的 `mihomoScript.js`，
 加入更强的广告过滤规则集与移动端省电配置。
 
-## 订阅地址
-
-把下面两行之一填进 Bettbox 的订阅设置：
-
-```
-https://cdn.jsdelivr.net/gh/<你的用户名>/<仓库名>@main/dist/mihomoScript.js
-https://raw.githubusercontent.com/<你的用户名>/<仓库名>/main/dist/mihomoScript.js
-```
-
-推荐 jsDelivr（国内访问更快，且有缓存）。raw 直连在部分网络下会被干扰。
-
 ## 与上游的差异
 
 在原版基础上做了 6 处改动，全部由 `build/patches.js` 声明：
