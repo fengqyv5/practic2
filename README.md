@@ -1,6 +1,5 @@
-# mihomoScript 定制版
+# 定制版
 
-基于 [AIsouler/MyClash](https://github.com/AIsouler/MyClash) 的 `mihomoScript.js`，
 加入更强的广告过滤规则集与移动端省电配置。
 
 ## 与上游的差异
@@ -53,16 +52,6 @@ node build/build.cjs            # 应用补丁 + 功能自检
 
 `.github/workflows/sync.yml` 每天检查上游，有更新则自动重建并提交。
 Actions 页可以手动触发，带 `force=1` 参数则强制重建。
-
-## 注意事项
-
-- **需要 mihomo ≥ 1.18.7** —— anti-AD 官方 mrs 的最低版本要求。
-  Bettbox 客户端内核较旧时，`启用AntiAD` 需改为 `false`。
-- **MiHomo-Hagezi 是第三方转换仓库**，非 HaGeZi 官方。
-  首次使用建议开着面板日志跑一两天，观察有无误杀登录/支付类域名。
-- **AdBlock 组可在面板切 `PASS`** —— 误杀时临时放行比改配置方便。
-- 强规则集有误杀可能。若发现误杀，先在面板切 PASS 确认是哪个规则集，
-  再关掉对应开关。
 
 ## 免责声明
 
