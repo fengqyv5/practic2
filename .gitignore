@@ -1,0 +1,28 @@
+# 分析过程中下载的临时文件（体积大，不入库）
+ad-*.txt
+ad-*.yaml
+*-pro.txt
+*.mrs
+antiad_readme.md
+category-ads.*
+hagezi-pro.txt
+mihomoConfig.yaml
+
+# 上游旧版本备份（每次 fetch 自动生成，无需入库）
+build/upstream.prev.js
+
+# 系统与编辑器
+.DS_Store
+Thumbs.db
+*.log
+node_modules/
+
+# WorkBuddy 本地工作区数据（项目相关数据，非项目产物）
+.workbuddy/
+
+# 注意：以下文件必须入库
+#   build/upstream.js        —— 上游原版基线
+#   build/patches.js         —— 你的定制
+#   build/build.cjs          —— 构建脚本
+#   build/fetch-upstream.cjs —— 拉取脚本
+#   dist/mihomoScript.js     —— 构建产物（订阅链接指向它）
