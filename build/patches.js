@@ -37,9 +37,9 @@ module.exports = [
   {
     name: '新增规则集地址常量与开关映射',
     anchor: `// 规则集 URL 公共前缀
-const ruleSetBaseUrl = 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/';`,
+const ruleSetBaseUrl = 'https://cdn.jsdmirror.com/gh/appshubcc/bett-rules@meta/geo/';`,
     replacement: `// 规则集 URL 公共前缀
-const ruleSetBaseUrl = 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/';
+const ruleSetBaseUrl = 'https://cdn.jsdmirror.com/gh/appshubcc/bett-rules@meta/geo/';
 
 // --- 广告过滤规则集地址（均为 mrs 二进制格式，behavior: domain，走 trie 匹配）---
 
